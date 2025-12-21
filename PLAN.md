@@ -54,6 +54,13 @@ Tasks:
 Acceptance Criteria: Round-trip tests (struct → md → struct) stable; frontmatter keys consistent.
 Risks/Gotchas: Timezone handling for dates; avoid altering body content/whitespace unnecessarily.
 
+## Phase 3.5 — Markdown Codec Review/Hardening
+Goal: Address edge cases found in codec review.
+Tasks:
+- [ ] Preserve body whitespace exactly; avoid trimming trailing newlines on read/write.
+- [ ] Make frontmatter delimiter parsing resilient to CRLF and extra content around delimiters.
+Acceptance Criteria: Existing round-trip tests still pass; add tests for preserved trailing newline and CRLF handling.
+
 ## Phase 4 — Vault Scanning & CRUD
 Goal: Operate over `notes/<year>/<month>/<id>.md`.
 Deliverables: CRUD functions; vault walker.
