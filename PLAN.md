@@ -137,6 +137,7 @@ Risks/Gotchas: Time-dependent tests; platform-specific paths.
 - Work TDD-first from here: write/extend tests before implementing code.
 - I provide command snippets and code examples; I only write/change files when explicitly asked to apply them.
 - Git commit messages: emphasize the why over the what; the diff already shows what changed.
+- Between phases, pause for a brief review of inefficiencies and refactoring opportunities before moving on.
 
 # Milestones
 - M1: Repo scaffolding ready; Cobra stub builds; CI pipeline runs fmt/vet/test.
