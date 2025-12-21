@@ -48,9 +48,9 @@ Risks/Gotchas: Cross-platform path handling; avoid invoking editor in config lay
 Goal: Read/write Note structs to Markdown with auto-generated frontmatter and skeleton.
 Deliverables: Note struct; codec for frontmatter + body; skeleton generator.
 Tasks:
-- [ ] Define Note fields (id, title, body, tags, dates, links).
-- [ ] Implement read: parse frontmatter + body; preserve link text; handle missing optional fields.
-- [ ] Implement write: generate frontmatter and basic body scaffold without user typing boilerplate.
+- [x] Define Note fields (id, title, body, tags, dates, links).
+- [x] Implement read: parse frontmatter + body; preserve link text; handle missing optional fields.
+- [x] Implement write: generate frontmatter and basic body scaffold without user typing boilerplate.
 Acceptance Criteria: Round-trip tests (struct → md → struct) stable; frontmatter keys consistent.
 Risks/Gotchas: Timezone handling for dates; avoid altering body content/whitespace unnecessarily.
 
