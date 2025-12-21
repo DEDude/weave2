@@ -27,9 +27,9 @@ Criteria: uniqueness; stability across edits/moves; human readability; sortable 
 Goal: Establish repo structure and baseline tooling.
 Deliverables: `cmd/` Cobra entrypoint, `internal/` packages skeleton, go.mod, make-like helper targets (fmt/test/vet), lint config if any.
 Tasks:
-- [ ] Init Go module; add Cobra dependency; create `cmd/weave2` main wiring stub.
-- [ ] Create `internal/` package layout (config, notes, markdown, links, search, rdfproj, graph, export).
-- [ ] Add basic Makefile/scripts for `gofmt`, `go test ./...`, `go vet ./...`.
+- [x] Init Go module; add Cobra dependency; create `cmd/weave2` main wiring stub.
+- [x] Create `internal/` package layout (config, notes, markdown, links, search, rdfproj, graph, export).
+- [x] Add basic Makefile/scripts for `gofmt`, `go test ./...`, `go vet ./...`.
 Acceptance Criteria: Build runs; `go test ./...` passes (empty/smoke); package boundaries clear.
 Risks/Gotchas: Avoid naming collisions with `tripl`; keep CLI commands placeholder-only.
 
@@ -40,6 +40,7 @@ Tasks:
 - [ ] Define config schema and defaults; support overrides via flags/env.
 - [ ] Validate vault path exists/creatable; resolve to absolute path.
 - [ ] Provide editor command hook (just stored, not executed yet).
+Status: Config struct + Load/validate implemented with tests; Cobra flag/env wiring still TODO.
 Acceptance Criteria: Config load/validate unit tests; errors are actionable.
 Risks/Gotchas: Cross-platform path handling; avoid invoking editor in config layer.
 
@@ -135,6 +136,7 @@ Risks/Gotchas: Time-dependent tests; platform-specific paths.
 # Collaboration Notes
 - Work TDD-first from here: write/extend tests before implementing code.
 - I provide command snippets and code examples; I only write/change files when explicitly asked to apply them.
+- Git commit messages: emphasize the why over the what; the diff already shows what changed.
 
 # Milestones
 - M1: Repo scaffolding ready; Cobra stub builds; CI pipeline runs fmt/vet/test.
