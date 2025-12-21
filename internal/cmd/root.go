@@ -18,6 +18,6 @@ var rootCmd = &cobra.Command{
 	Use:   "weave2",
 	Short: "Weave notes to RDF/graph",
 	Run: func(cmd *cobra.Command, args []string) {
-		//TODO: add subcommands
+		// TODO: wire subcommands
 	},
 }

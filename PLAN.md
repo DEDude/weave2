@@ -132,6 +132,10 @@ Tasks:
 Acceptance Criteria: CI green; coverage hits core logic; no race warnings.
 Risks/Gotchas: Time-dependent tests; platform-specific paths.
 
+# Collaboration Notes
+- Work TDD-first from here: write/extend tests before implementing code.
+- I provide command snippets and code examples; I only write/change files when explicitly asked to apply them.
+
 # Milestones
 - M1: Repo scaffolding ready; Cobra stub builds; CI pipeline runs fmt/vet/test.
 - M2: Notes round-trip: create Note struct → write Markdown → read back → matches; link parser/helper working.
