@@ -37,10 +37,10 @@ Risks/Gotchas: Avoid naming collisions with `tripl`; keep CLI commands placehold
 Goal: Load user config (vault path, editor) with sensible defaults.
 Deliverables: Config struct, loader (env/file flags), validation.
 Tasks:
-- [ ] Define config schema and defaults; support overrides via flags/env.
-- [ ] Validate vault path exists/creatable; resolve to absolute path.
-- [ ] Provide editor command hook (just stored, not executed yet).
-Status: Config struct + Load/validate implemented with tests; Cobra flag/env wiring still TODO.
+- [x] Define config schema and defaults; support overrides via flags/env.
+- [x] Validate vault path exists/creatable; resolve to absolute path.
+- [x] Provide editor command hook (just stored, not executed yet).
+Status: Config struct + Load/validate with env/flag wiring and tests done.
 Acceptance Criteria: Config load/validate unit tests; errors are actionable.
 Risks/Gotchas: Cross-platform path handling; avoid invoking editor in config layer.
 
