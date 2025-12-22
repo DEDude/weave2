@@ -71,3 +71,25 @@ func TestGenerateID(t *testing.T) {
 		}
 	}
 }
+
+func TestResolvePath(t *testing.T) {
+	tests := []struct {
+		vaultPath string
+		id        string
+		want      string
+	}{
+		{"/vault", "my-note-20250122223045", "/vault/2025/01/my-note-20250122223045.md"},
+		{"/vault", "test-20251231235959", "/vault/2025/12/test-20251231235959.md"},
+		{"/vault", "note-20240101000000", "/vault/2024/01/note-20240101000000.md"},
+		{"/home/notes", "hello-20250615120000", "/home/notes/2025/06/hello-20250615120000.md"},
+		{"/vault", "20250122223045", "/vault/2025/01/20250122223045.md"},
+	}
+
+	for _, tt := range tests {
+		got := ResolvePath(tt.vaultPath, tt.id)
+
+		if got != tt.want {
+			t.Errorf("ResolvePath(%q, %q) = %q, want %q", tt.vaultPath, tt.id, got, tt.want)
+		}
+	}
+}
