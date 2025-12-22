@@ -16,11 +16,20 @@ Pipeline: Markdown files in the vault → parsed into Note structs (frontmatter 
 # Open Decisions (TODO)
 ## ID Generation
 Criteria: uniqueness; stability across edits/moves; human readability; sortable properties; collision strategy; timezone handling.
-- [ ] Draft ADR options (e.g., time-based, random, slugged) vs criteria.
-- [ ] Evaluate vault layout impact and collision handling.
-- [ ] Choose ID strategy; document rationale and trade-offs.
-- [ ] Record migration/backfill approach (if any).
-- [ ] Add automated checks/tests for chosen scheme.
+- [x] Draft ADR options (e.g., time-based, random, slugged) vs criteria.
+- [x] Evaluate vault layout impact and collision handling.
+- [x] Choose ID strategy; document rationale and trade-offs.
+- [x] Record migration/backfill approach (if any).
+- [x] Add automated checks/tests for chosen scheme.
+
+**Decision:** Hybrid title-timestamp format: `<title-slug>-<timestamp>`
+- Format: `my-note-title-20250122221400` (YYYYMMDDHHMMSS, UTC, second precision)
+- Title slug: lowercase, hyphens for spaces, special chars stripped
+- Auto-generated on note creation
+- Timestamp at end ensures uniqueness without sacrificing readability
+- No collision handling needed (second precision sufficient)
+- Vault layout: `notes/<year>/<month>/<id>.md` (year/month from UTC timestamp, zero-padded months)
+- Rationale: Title-first improves readability when browsing files; folder structure already provides chronological organization; RDF handles relationships so ID does not need semantic meaning beyond uniqueness.
 
 # Phased Work Plan (Tasks)
 ## Phase 1 — Scaffolding & Boundaries
@@ -65,11 +74,15 @@ Acceptance Criteria: Existing round-trip tests still pass; CRLF handling test ad
 Goal: Operate over `notes/<year>/<month>/<id>.md`.
 Deliverables: CRUD functions; vault walker.
 Tasks:
-- [ ] Implement path resolver for year/month/id.
-- [ ] List/scan vault to load notes (lazy or eager as chosen).
-- [ ] Create/update/delete note files with safe writes (temp + rename).
-Acceptance Criteria: CRUD tests with temp dirs; layout enforced.
-Risks/Gotchas: File collisions; concurrent writes; permissions.
+- [x] 4.1: Implement ID generation (title slug + timestamp) with tests.
+- [ ] 4.2: Implement path resolver (ID → file path) with tests.
+- [ ] 4.3: Implement Create (generate ID, create dirs, safe write) with tests.
+- [ ] 4.4: Implement Read (load single note by ID) with tests.
+- [ ] 4.5: Implement Update (overwrite existing note, safe write) with tests.
+- [ ] 4.6: Implement Delete (remove file) with tests.
+- [ ] 4.7: Implement List/Scan (walk vault, load all notes) with tests.
+Acceptance Criteria: CRUD tests with temp dirs; layout enforced; all operations safe and tested.
+Risks/Gotchas: File collisions; concurrent writes; permissions; title slugification edge cases.
 
 ## Phase 5 — Link Helpers & Parser
 Goal: Assist users inserting links without manual IDs; parse existing links.

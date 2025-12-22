@@ -66,7 +66,7 @@ func TestHandlesCRLF(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Read() error = %v", err)
 	}
-	
+
 	if parsed.ID != "test" {
 		t.Fatalf("ID = %q, want %q", parsed.ID, "test")
 	}
