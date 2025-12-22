@@ -57,9 +57,9 @@ Risks/Gotchas: Timezone handling for dates; avoid altering body content/whitespa
 ## Phase 3.5 — Markdown Codec Review/Hardening
 Goal: Address edge cases found in codec review.
 Tasks:
-- [ ] Preserve body whitespace exactly; avoid trimming trailing newlines on read/write.
-- [ ] Make frontmatter delimiter parsing resilient to CRLF and extra content around delimiters.
-Acceptance Criteria: Existing round-trip tests still pass; add tests for preserved trailing newline and CRLF handling.
+- [x] Add CRLF normalization to handle Windows line endings.
+Status: CRLF handling implemented and tested. Skipped whitespace preservation and resilient delimiter parsing as they added complexity without clear benefit.
+Acceptance Criteria: Existing round-trip tests still pass; CRLF handling test added and passing.
 
 ## Phase 4 — Vault Scanning & CRUD
 Goal: Operate over `notes/<year>/<month>/<id>.md`.

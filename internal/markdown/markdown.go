@@ -63,7 +63,7 @@ func Write(n Note) ([]byte, error) {
 
 func Read(data []byte) (Note, error) {
 	const delim = "---"
-	content := string(data)
+	content := strings.ReplaceAll(string(data), "\r\n", "\n")
 	if !strings.HasPrefix(content, delim+"\n") {
 		return Note{}, errors.New("missing frontmatter")
 	}

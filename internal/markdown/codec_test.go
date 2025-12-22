@@ -59,3 +59,21 @@ func TestWriteAddsFrontmatter(t *testing.T) {
 		t.Fatalf("output should end with newline")
 	}
 }
+
+func TestHandlesCRLF(t *testing.T) {
+	input := "---\r\nid: test\r\ntitle: Test\r\n---\r\n\r\ncontent"
+	parsed, err := Read([]byte(input))
+	if err != nil {
+		t.Fatalf("Read() error = %v", err)
+	}
+	
+	if parsed.ID != "test" {
+		t.Fatalf("ID = %q, want %q", parsed.ID, "test")
+	}
+	if parsed.Title != "Test" {
+		t.Fatalf("Title = %q, want %q", parsed.Title, "Test")
+	}
+	if parsed.Body != "content" {
+		t.Fatalf("Body = %q, want %q", parsed.Body, "content")
+	}
+}
