@@ -1,8 +1,11 @@
 package notes
 
 import (
+	"os"
 	"testing"
 	"time"
+
+	"github.com/DeDude/weave2/internal/markdown"
 )
 
 func TestSlugify(t *testing.T) {
@@ -91,5 +94,59 @@ func TestResolvePath(t *testing.T) {
 		if got != tt.want {
 			t.Errorf("ResolvePath(%q, %q) = %q, want %q", tt.vaultPath, tt.id, got, tt.want)
 		}
+	}
+}
+
+func TestCreate(t *testing.T) {
+	vaultPath := t.TempDir()
+
+	note := markdown.Note{
+		Title: "My Test Note",
+		Body:  "This is the body",
+		Tags:  []string{"test"},
+	}
+
+	ts := time.Date(2025, 1, 22, 22, 30, 45, 0, time.UTC)
+
+	id, err := Create(vaultPath, note, ts)
+
+	if err != nil {
+		t.Fatalf("Create() error = %v", err)
+	}
+
+	expectedID := "my-test-note-20250122223045"
+
+	if id != expectedID {
+		t.Errorf("Create() id = %q, want %q", id, expectedID)
+	}
+
+	expectedPath := vaultPath + "/2025/01/my-test-note-20250122223045.md"
+
+	if _, err := os.Stat(expectedPath); os.IsNotExist(err) {
+		t.Errorf("File not created at %q", expectedPath)
+	}
+
+	data, err := os.ReadFile(expectedPath)
+
+	if err != nil {
+		t.Fatalf("ReadFile() error = %v", err)
+	}
+
+	parsed, err := markdown.Read(data)
+
+	if err != nil {
+		t.Fatalf("markdown.Read() error = %v", err)
+	}
+
+	if parsed.ID != expectedID {
+		t.Errorf("parsed.ID = %q, want %q", parsed.ID, expectedID)
+	}
+
+	if parsed.Title != "My Test Note" {
+		t.Errorf("parsed.Title = %q, want %q", parsed.Title, "My Test Note")
+	}
+
+	if parsed.Body != "This is the body" {
+		t.Errorf("parsed.Body = %q, want %q", parsed.Body, "This is the body")
 	}
 }

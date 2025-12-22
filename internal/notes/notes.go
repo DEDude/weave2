@@ -1,9 +1,14 @@
 package notes
 
 import (
+	"fmt"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/DeDude/weave2/internal/markdown"
 )
 
 func GenerateID(title string, timestamp time.Time) string {
@@ -43,4 +48,37 @@ func ResolvePath(vaultPath, id string) string {
 	month := timestamp[4:6]
 
 	return vaultPath + "/" + year + "/" + month + "/" + id + ".md"
+}
+
+func Create(vaultPath string, note markdown.Note, timestamp time.Time) (string, error) {
+	id := GenerateID(note.Title, timestamp)
+
+	note.ID = id
+	note.Created = timestamp
+	note.Modified = timestamp
+
+	filePath := ResolvePath(vaultPath, id)
+
+	dir := filepath.Dir(filePath)
+	if err := os.MkdirAll(dir, 0755); err != nil {
+		return "", fmt.Errorf("create directories: %w", err)
+	}
+
+	data, err := markdown.Write(note)
+	if err != nil {
+		return "", fmt.Errorf("write markdown: %w", err)
+	}
+
+	tempPath := filePath + ".tmp"
+	if err := os.WriteFile(tempPath, data, 0644); err != nil {
+		return "", fmt.Errorf("write temp file: %w", err)
+	}
+
+	if err := os.Rename(tempPath, filePath); err != nil {
+		os.Remove(tempPath)
+
+		return "", fmt.Errorf("rename file: %w", err)
+	}
+
+	return id, nil
 }
