@@ -31,6 +31,20 @@ Criteria: uniqueness; stability across edits/moves; human readability; sortable 
 - Vault layout: `notes/<year>/<month>/<id>.md` (year/month from UTC timestamp, zero-padded months)
 - Rationale: Title-first improves readability when browsing files; folder structure already provides chronological organization; RDF handles relationships so ID does not need semantic meaning beyond uniqueness.
 
+## Relationship Types
+Criteria: semantic clarity; standard vocab alignment; extensibility.
+- [x] Define typed link syntax and storage format.
+- [x] Map relationship types to RDF predicates.
+
+**Decision:** Typed relationships using `[[type::ID]]` syntax
+- Default type: `linksTo` (when no type specified)
+- Standard SKOS relationships: `related`, `broader`, `narrower`
+- Standard RDFS: `seeAlso`
+- Custom weave: namespace for domain-specific types (e.g., `elaborates`, `contradicts`, `references`)
+- Storage: Links stored as structured objects with id, type, and optional label
+- RDF mapping: Standard types map to SKOS/RDFS predicates; custom types use weave: namespace
+- Rationale: Typed relationships enable richer semantic graphs while maintaining compatibility with standard vocabularies.
+
 # Phased Work Plan (Tasks)
 ## Phase 1 — Scaffolding & Boundaries
 Goal: Establish repo structure and baseline tooling.
@@ -95,13 +109,15 @@ Tasks:
 Acceptance Criteria: All existing tests still pass; no functional changes; code is cleaner.
 Risks/Gotchas: Ensure refactoring does not introduce bugs; maintain backward compatibility.
 ## Phase 5 — Link Helpers & Parser
-Goal: Assist users inserting links without manual IDs; parse existing links.
-Deliverables: Helper to format `[[ID|label]]`/`[[ID]]`; parser to extract targets.
+Goal: Support typed relationships between notes with wiki-style link syntax.
+Deliverables: Link struct; formatter for typed links; parser to extract links with types.
 Tasks:
-- [ ] Implement formatter that takes id + optional label.
-- [ ] Implement parser to extract link targets and labels from body text.
-Acceptance Criteria: Unit tests covering edge cases (nested brackets, punctuation).
-Risks/Gotchas: Avoid false positives in code blocks; Unicode in labels if encountered.
+- [x] 5.1: Define Link struct (ID, Type, Label) and update Note struct.
+- [ ] 5.2: Implement formatter: FormatLink(id, type, label) supporting [[ID]], [[type::ID]], [[type::ID|label]].
+- [ ] 5.3: Implement parser: ParseLinks(body) to extract all links with types and labels.
+- [ ] 5.4: Update markdown codec to serialize/deserialize structured links in frontmatter.
+Acceptance Criteria: Round-trip tests for all link formats; parser handles edge cases; default type is linksTo.
+Risks/Gotchas: Avoid false positives in code blocks; validate relationship types; handle malformed link syntax gracefully.
 
 ## Phase 6 — Search (Scan-First)
 Goal: Search across title, body, frontmatter, tags, link targets.
@@ -117,7 +133,7 @@ Risks/Gotchas: Performance on large vaults (acceptable for v0.1); case folding d
 Goal: Project Notes to RDF triples using tripl and vocab strategy.
 Deliverables: Converter Note → []tripl.Triple; vocab mapping.
 Tasks:
-- [ ] Map fields: dcterms:title, dcterms:identifier, dcterms:created/modified, schema:text, skos:Concept for tags, weave:linksTo for links, foaf:Person if authors exist.
+- [ ] Map fields: dcterms:title, dcterms:identifier, dcterms:created/modified, schema:text, skos:Concept for tags, typed relationships: skos:related, skos:broader, skos:narrower, rdfs:seeAlso, weave:* for custom types, foaf:Person if authors exist.
 - [ ] Use tripl constructors; no reimplementation.
 - [ ] Tests for triple contents and serialization via tripl encoders (Turtle/N-Triples/JSON-LD).
 Acceptance Criteria: Triples match expected IRIs/literals in tests; serialize without errors.

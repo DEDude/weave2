@@ -4,6 +4,8 @@ import (
 	"reflect"
 	"testing"
 	"time"
+
+	"github.com/DeDude/weave2/internal/links"
 )
 
 func TestRoundTrip(t *testing.T) {
@@ -17,7 +19,10 @@ func TestRoundTrip(t *testing.T) {
 		Tags:     []string{"foo", "bar"},
 		Created:  created,
 		Modified: modified,
-		Links:    []string{"alpha", "beta"},
+		Links: []links.Link{
+			{ID: "alpha", Type: "linksTo", Label: ""},
+			{ID: "beta", Type: "linksTo", Label: ""},
+		},
 	}
 
 	data, err := Write(orig)

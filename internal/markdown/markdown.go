@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"gopkg.in/yaml.v3"
+	"github.com/DeDude/weave2/internal/links"
 )
 
 type Note struct {
@@ -17,16 +18,16 @@ type Note struct {
 	Tags     []string
 	Created  time.Time
 	Modified time.Time
-	Links    []string
+	Links    []links.Link
 }
 
 type frontmatter struct {
-	ID       string    `yaml:"id"`
-	Title    string    `yaml:"title"`
-	Tags     []string  `yaml:"tags,omitempty"`
-	Created  time.Time `yaml:"created,omitempty"`
-	Modified time.Time `yaml:"modified,omitempty"`
-	Links    []string  `yaml:"links,omitempty"`
+	ID       string        `yaml:"id"`
+	Title    string        `yaml:"title"`
+	Tags     []string      `yaml:"tags,omitempty"`
+	Created  time.Time     `yaml:"created,omitempty"`
+	Modified time.Time     `yaml:"modified,omitempty"`
+	Links    []links.Link  `yaml:"links,omitempty"`
 }
 
 func Write(n Note) ([]byte, error) {
