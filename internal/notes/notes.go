@@ -82,3 +82,19 @@ func Create(vaultPath string, note markdown.Note, timestamp time.Time) (string, 
 
 	return id, nil
 }
+
+func Read(vaultPath, id string) (markdown.Note, error) {
+	filePath := ResolvePath(vaultPath, id)
+
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return markdown.Note{}, fmt.Errorf("read file: %w", err)
+	}
+
+	note, err := markdown.Read(data)
+	if err != nil {
+		return markdown.Note{}, fmt.Errorf("parse markdownL %w", err)
+	}
+
+	return note, nil
+}

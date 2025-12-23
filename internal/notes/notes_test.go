@@ -150,3 +150,51 @@ func TestCreate(t *testing.T) {
 		t.Errorf("parsed.Body = %q, want %q", parsed.Body, "This is the body")
 	}
 }
+
+func TestRead(t *testing.T) {
+	vaultPath := t.TempDir()
+
+	note := markdown.Note{
+		Title: "Test Note",
+		Body:  "Test body",
+		Tags:  []string{"tag1", "tag2"},
+	}
+
+	ts := time.Date(2025, 1, 22, 22, 30, 45, 0, time.UTC)
+	id, err := Create(vaultPath, note, ts)
+
+	if err != nil {
+		t.Fatalf("Create() error = %v", err)
+	}
+
+	loaded, err := Read(vaultPath, id)
+	if err != nil {
+		t.Fatalf("Read() error = %v", err)
+	}
+
+	if loaded.ID != id {
+		t.Errorf("loaded.ID = %q, want %q", loaded.ID, id)
+	}
+
+	if loaded.Title != "Test Note" {
+		t.Errorf("loaded.Title = %q, want %q", loaded.Title, "Test Note")
+	}
+
+	if loaded.Body != "Test body" {
+		t.Errorf("loaded.Body = %q, want %q", loaded.Body, "Test body")
+	}
+
+	if len(loaded.Tags) != 2 {
+		t.Errorf("len(loaded.Tags) = %d, want 2", len(loaded.Tags))
+	}
+}
+
+func TestReadNonExistent(t *testing.T) {
+	vaultPath := t.TempDir()
+
+	_, err := Read(vaultPath, "nonexistent-20250122223045")
+
+	if err == nil {
+		t.Fatal("Read() error = nil, want error for non-existent note")
+	}
+}
