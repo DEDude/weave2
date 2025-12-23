@@ -287,3 +287,68 @@ func TestDeleteNonExistent(t *testing.T) {
 		t.Fatal("Delete() error = nil, want error for non-existent note")
 	}
 }
+
+func TestList(t *testing.T) {
+	vaultPath := t.TempDir()
+
+	notes := []markdown.Note{
+		{Title: "Note one", Body: "Body 1"},
+		{Title: "Note two", Body: "Body 2"},
+		{Title: "Note three", Body: "Body 3"},
+	}
+
+	ts1 := time.Date(2025, 1, 22, 10, 0, 0, 0, time.UTC)
+	ts2 := time.Date(2025, 2, 15, 12, 0, 0, 0, time.UTC)
+	ts3 := time.Date(2024, 12, 31, 23, 59, 59, 0, time.UTC)
+
+	_, err := Create(vaultPath, notes[0], ts1)
+
+	if err != nil {
+		t.Fatalf("Create() error = %v", err)
+	}
+
+	_, err = Create(vaultPath, notes[1], ts2)
+
+	if err != nil {
+		t.Fatalf("Create() error = %v", err)
+	}
+
+	_, err = Create(vaultPath, notes[2], ts3)
+
+	if err != nil {
+		t.Fatalf("Create() error = %v", err)
+	}
+
+	loaded, err := List(vaultPath)
+	
+	if err != nil {
+		t.Fatalf("List() error = %v", err)	
+	}
+
+	if len(loaded) != 3 {
+		t.Fatalf("List() returned %d notes, want 3", len(loaded))
+	}
+
+	titles := make(map[string]bool)
+	for _, note := range loaded {
+		titles[note.Title] = true
+	}
+
+	if !titles["Note one"] || !titles["Note two"] || !titles["Note three"] {
+		t.Error("Not all notes were loaded")
+	}
+}
+
+func TestListEmpty(t *testing.T){
+	vaultPath := t.TempDir()
+
+	loaded, err := List(vaultPath)
+	
+	if err != nil {
+		t.Fatalf("List() error = %v", err)	
+	}
+
+	if len(loaded) != 0 {
+		t.Errorf("List() returned %d notes, want 0", len(loaded))
+	}
+}

@@ -142,3 +142,42 @@ func Delete(vaultPath, id string) error {
 
 	return nil
 }
+
+func List(vaultPath string) ([]markdown.Note, error) {
+	var notes []markdown.Note
+
+	err := filepath.Walk(vaultPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if info.IsDir() {
+			return nil
+		}
+
+		if filepath.Ext(path) != ".md" {
+			return nil
+		}
+
+		data, err := os.ReadFile(path)
+
+		if err != nil {
+			return fmt.Errorf("read file %s: %w", path, err)
+		}
+
+		note, err := markdown.Read(data)
+
+		if err != nil {
+			return fmt.Errorf("parse markdown %s: %w", path, err)
+		}
+
+		notes = append(notes, note)
+		return nil
+	})
+
+	if err != nil {
+		return nil, fmt.Errorf("walk vault: %w", err)
+	}
+
+	return notes, nil
+}
