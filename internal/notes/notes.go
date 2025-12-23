@@ -98,3 +98,37 @@ func Read(vaultPath, id string) (markdown.Note, error) {
 
 	return note, nil
 }
+
+func Update(vaultPath, id string, note markdown.Note, timestamp time.Time) error {
+	// Read existing note to preserve Created time
+	existing, err := Read(vaultPath, id)
+	if err != nil {
+		return fmt.Errorf("read existing note: %w", err)
+	}
+
+	note.ID = id
+	note.Created = existing.Created
+	note.Modified = timestamp
+
+	filePath := ResolvePath(vaultPath, id)
+
+	data, err := markdown.Write(note)
+
+	if err != nil {
+		return fmt.Errorf("write markdown: %w", err)
+	}
+
+	tempPath := filePath + ".tmp"
+
+	if err := os.WriteFile(tempPath, data, 0644); err != nil {
+		return fmt.Errorf("write temp file: %w", err)
+	}
+
+	if err := os.Rename(tempPath, filePath); err != nil {
+		os.Remove(tempPath)
+
+		return fmt.Errorf("rename file: %w", err)
+	}
+
+	return nil
+}

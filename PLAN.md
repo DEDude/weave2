@@ -78,7 +78,7 @@ Tasks:
 - [x] 4.2: Implement path resolver (ID → file path) with tests.
 - [x] 4.3: Implement Create (generate ID, create dirs, safe write) with tests.
 - [x] 4.4: Implement Read (load single note by ID) with tests.
-- [ ] 4.5: Implement Update (overwrite existing note, safe write) with tests.
+- [x] 4.5: Implement Update (overwrite existing note, safe write) with tests.
 - [ ] 4.6: Implement Delete (remove file) with tests.
 - [ ] 4.7: Implement List/Scan (walk vault, load all notes) with tests.
 Acceptance Criteria: CRUD tests with temp dirs; layout enforced; all operations safe and tested.

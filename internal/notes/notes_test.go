@@ -198,3 +198,52 @@ func TestReadNonExistent(t *testing.T) {
 		t.Fatal("Read() error = nil, want error for non-existent note")
 	}
 }
+
+func TestUpdate(t *testing.T) {
+	vaultPath := t.TempDir()
+
+	note := markdown.Note{
+		Title: "Original Title",
+		Body:  "original body",
+		Tags:  []string{"tag1"},
+	}
+
+	ts := time.Date(2025, 1, 22, 22, 30, 45, 0, time.UTC)
+	id, err := Create(vaultPath, note, ts)
+
+	if err != nil {
+		t.Fatalf("Create() error = %v", err)
+	}
+
+	note.Title = "Updated Title"
+	note.Body = "Updated body"
+	note.Tags = []string{"tag1", "tag2"}
+
+	updateTime := time.Date(2025, 1, 22, 23, 0, 0, 0, time.UTC)
+	err = Update(vaultPath, id, note, updateTime)
+
+	if err != nil {
+		t.Fatalf("Update() error = %v", err)
+	}
+
+	loaded, err := Read(vaultPath, id)
+	if err != nil {
+		t.Fatalf("Read() error = %v", err)
+	}
+
+	if loaded.Title != "Updated Title" {
+		t.Errorf("loaded.Title = %q, want %q", loaded.Title, "Updated Title")
+	}
+
+	if loaded.Body != "Updated body" {
+		t.Errorf("loaded.Body = %q, want %q", loaded.Body, "Updated body")
+	}
+
+	if loaded.Modified != updateTime {
+		t.Errorf("loaded.Modified = %v, want %v", loaded.Modified, updateTime)
+	}
+
+	if loaded.Created != ts {
+		t.Errorf("loaded.Created = %v, want %v (should not change)", loaded.Created, ts)
+	}
+}
