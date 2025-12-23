@@ -89,11 +89,22 @@ func TestResolvePath(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got := ResolvePath(tt.vaultPath, tt.id)
+		got, err := ResolvePath(tt.vaultPath, tt.id)
+
+		if err != nil {
+			t.Fatalf("ResolvePath(%q, %q) error = %v", tt.vaultPath, tt.id, err)
+		}
 
 		if got != tt.want {
 			t.Errorf("ResolvePath(%q, %q) = %q, want %q", tt.vaultPath, tt.id, got, tt.want)
 		}
+	}
+}
+
+func TestResolvePathInvalidID(t *testing.T) {
+	_, err := ResolvePath("/vault", "short")
+	if err == nil {
+		t.Fatal("ResolvePath() error = nil, want error for short ID")
 	}
 }
 
@@ -263,7 +274,10 @@ func TestDelete(t *testing.T) {
 		t.Fatalf("Create() erorr = %v", err)
 	}
 
-	filePath := ResolvePath(vaultPath, id)
+	filePath, err := ResolvePath(vaultPath, id)
+	if err != nil {
+		t.Fatalf("ResolvePath() error = %v", err)
+	}
 
 	if _, err := os.Stat(filePath); os.IsNotExist(err) {
 		t.Fatal("File should exist before delete")
@@ -319,10 +333,10 @@ func TestList(t *testing.T) {
 		t.Fatalf("Create() error = %v", err)
 	}
 
-	loaded, err := List(vaultPath)
+	loaded, errs := List(vaultPath)
 	
-	if err != nil {
-		t.Fatalf("List() error = %v", err)	
+	if len(errs) > 0 {
+		t.Fatalf("List() returned errors: %v", errs)	
 	}
 
 	if len(loaded) != 3 {
@@ -342,13 +356,48 @@ func TestList(t *testing.T) {
 func TestListEmpty(t *testing.T){
 	vaultPath := t.TempDir()
 
-	loaded, err := List(vaultPath)
+	loaded, errs := List(vaultPath)
 	
-	if err != nil {
-		t.Fatalf("List() error = %v", err)	
+	if len(errs) > 0 {
+		t.Fatalf("List() returned errors: %v", errs)	
 	}
 
 	if len(loaded) != 0 {
 		t.Errorf("List() returned %d notes, want 0", len(loaded))
+	}
+}
+
+func TestListSkipsBadFiles(t *testing.T) {
+	vaultPath := t.TempDir()
+	
+	note := markdown.Note{
+		Title: "Good Note",
+		Body:  "Valid content",
+	}
+	
+	ts := time.Date(2025, 1, 22, 10, 0, 0, 0, time.UTC)
+	_, err := Create(vaultPath, note, ts)
+	if err != nil {
+		t.Fatalf("Create() error = %v", err)
+	}
+	
+	badFilePath := vaultPath + "/2025/01/bad-file.md"
+	err = os.WriteFile(badFilePath, []byte("not valid markdown"), 0644)
+	if err != nil {
+		t.Fatalf("WriteFile() error = %v", err)
+	}
+	
+	loaded, errs := List(vaultPath)
+	
+	if len(errs) == 0 {
+		t.Fatal("List() returned no errors, expected error for bad file")
+	}
+	
+	if len(loaded) != 1 {
+		t.Fatalf("List() returned %d notes, want 1 (should skip bad file)", len(loaded))
+	}
+	
+	if loaded[0].Title != "Good Note" {
+		t.Errorf("loaded note title = %q, want %q", loaded[0].Title, "Good Note")
 	}
 }

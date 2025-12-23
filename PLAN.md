@@ -82,9 +82,18 @@ Tasks:
 - [x] 4.6: Implement Delete (remove file) with tests.
 - [x] 4.7: Implement List/Scan (walk vault, load all notes) with tests.
 Status: Phase 4 complete. All CRUD operations implemented with safe file writes and comprehensive tests.
-Acceptance Criteria: CRUD tests with temp dirs; layout enforced; all operations safe and tested.
-Risks/Gotchas: File collisions; concurrent writes; permissions; title slugification edge cases.
 
+## Phase 4.5 — Refactoring & Optimization
+Goal: Address code quality issues and reduce duplication.
+Deliverables: Cleaner, more maintainable code without changing functionality.
+Tasks:
+- [x] 4.5.1: Fix typo in Read function error message (markdownL → markdown).
+- [x] 4.5.2: Add bounds checking in ResolvePath for ID length validation.
+- [x] 4.5.3: Extract safe write helper to eliminate duplication between Create and Update.
+- [x] 4.5.4: Pre-compile regex patterns in slugify for performance.
+- [x] 4.5.5: Consider making List more resilient (skip bad files vs fail fast).
+Acceptance Criteria: All existing tests still pass; no functional changes; code is cleaner.
+Risks/Gotchas: Ensure refactoring does not introduce bugs; maintain backward compatibility.
 ## Phase 5 — Link Helpers & Parser
 Goal: Assist users inserting links without manual IDs; parse existing links.
 Deliverables: Helper to format `[[ID|label]]`/`[[ID]]`; parser to extract targets.
