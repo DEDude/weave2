@@ -132,3 +132,13 @@ func Update(vaultPath, id string, note markdown.Note, timestamp time.Time) error
 
 	return nil
 }
+
+func Delete(vaultPath, id string) error {
+	filePath := ResolvePath(vaultPath, id)
+
+	if err := os.Remove(filePath); err != nil {
+		return fmt.Errorf("remove file: %w", err)
+	}
+
+	return nil
+}

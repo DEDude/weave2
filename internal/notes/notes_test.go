@@ -247,3 +247,43 @@ func TestUpdate(t *testing.T) {
 		t.Errorf("loaded.Created = %v, want %v (should not change)", loaded.Created, ts)
 	}
 }
+
+func TestDelete(t *testing.T) {
+	vaultPath := t.TempDir()
+
+	note := markdown.Note{
+		Title: "Test Note",
+		Body:  "Test body",
+	}
+
+	ts := time.Date(2025, 1, 22, 22, 30, 45, 0, time.UTC)
+	id, err := Create(vaultPath, note, ts)
+
+	if err != nil {
+		t.Fatalf("Create() erorr = %v", err)
+	}
+
+	filePath := ResolvePath(vaultPath, id)
+
+	if _, err := os.Stat(filePath); os.IsNotExist(err) {
+		t.Fatal("File should exist before delete")
+	}
+
+	err = Delete(vaultPath, id)
+	if err != nil {
+		t.Fatalf("Delete() error = %v", err)
+	}
+
+	if _, err := os.Stat(filePath); !os.IsNotExist(err) {
+		t.Error("File should not exist after delete")
+	}
+}
+
+func TestDeleteNonExistent(t *testing.T) {
+	vaultPath := t.TempDir()
+
+	err := Delete(vaultPath, "nonexistent-20250122223045")
+	if err == nil {
+		t.Fatal("Delete() error = nil, want error for non-existent note")
+	}
+}
