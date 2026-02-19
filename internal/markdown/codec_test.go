@@ -82,3 +82,35 @@ func TestHandlesCRLF(t *testing.T) {
 		t.Fatalf("Body = %q, want %q", parsed.Body, "content")
 	}
 }
+
+func TestRoundTripWithLinks(t *testing.T) {
+	created := time.Date(2024, 1, 2, 3, 4, 5, 0, time.UTC)
+	modified := time.Date(2024, 2, 3, 4, 5, 6, 0, time.UTC)
+
+	orig := Note{
+		ID:       "note-123",
+		Title:    "Hello World",
+		Body:     "Line 1\n\nLine 2",
+		Tags:     []string{"foo", "bar"},
+		Created:  created,
+		Modified: modified,
+		Links: []links.Link{
+			{ID: "alpha", Type: "linksTo", Label: ""},
+			{ID: "beta", Type: "related", Label: "Related Note"},
+		},
+	}
+
+	data, err := Write(orig)
+	if err != nil {
+		t.Fatalf("Write() error = %v", err)
+	}
+
+	parsed, err := Read(data)
+	if err != nil {
+		t.Fatalf("Read() error = %v", err)
+	}
+
+	if !reflect.DeepEqual(orig, parsed) {
+		t.Fatalf("round trip mismatch:\norig  = %+v\nparsed= %+v", orig, parsed)
+	}
+}

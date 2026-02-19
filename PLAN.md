@@ -115,8 +115,8 @@ Tasks:
 - [x] 5.1: Define Link struct (ID, Type, Label) and update Note struct.
 - [x] 5.2: Implement formatter: FormatLink(id, type, label) supporting [[ID]], [[type::ID]], [[type::ID|label]].
 - [x] 5.3: Implement parser: ParseLinks(body) to extract all links with types and labels.
-- [ ] 5.4: Update markdown codec to serialize/deserialize structured links in frontmatter.
-Status: Phase 5.2 and 5.3 complete with tests; 5.4 remains.
+- [x] 5.4: Update markdown codec to serialize/deserialize structured links in frontmatter.
+Status: Phase 5 complete. All link formatting, parsing, and codec integration done with comprehensive tests.
 Acceptance Criteria: Round-trip tests for all link formats; parser handles edge cases; default type is linksTo.
 Risks/Gotchas: Avoid false positives in code blocks; validate relationship types; handle malformed link syntax gracefully.
 
@@ -134,6 +134,7 @@ Risks/Gotchas: Performance on large vaults (acceptable for v0.1); case folding d
 Goal: Project Notes to RDF triples using tripl and vocab strategy.
 Deliverables: Converter Note → []tripl.Triple; vocab mapping.
 Tasks:
+- [ ] Validate relationship types: whitelist known types, map to appropriate RDF predicates, handle unknown types gracefully.
 - [ ] Map fields: dcterms:title, dcterms:identifier, dcterms:created/modified, schema:text, skos:Concept for tags, typed relationships: skos:related, skos:broader, skos:narrower, rdfs:seeAlso, weave:* for custom types, foaf:Person if authors exist.
 - [ ] Use tripl constructors; no reimplementation.
 - [ ] Tests for triple contents and serialization via tripl encoders (Turtle/N-Triples/JSON-LD).

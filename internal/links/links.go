@@ -29,6 +29,43 @@ func FormatLink(id, relType, label string) string {
 	return "[[" + core + "]]"
 }
 
+func isInCodeBlock(body string, pos int) bool {
+	fenceCount := 0
+	i := 0
+	for i < pos {
+		if i+2 < len(body) && body[i:i+3] == "```" {
+			fenceCount++
+			i += 3
+			for i < len(body) && body[i] != '\n' {
+				i++
+			}
+			continue
+		}
+		i++
+	}
+	if fenceCount%2 == 1 {
+		return true
+	}
+
+	lineStart := strings.LastIndex(body[:pos], "\n") + 1
+	inlinePart := body[lineStart:pos]
+	
+	backtickCount := 0
+	j := 0
+	for j < len(inlinePart) {
+		if j+2 < len(inlinePart) && inlinePart[j:j+3] == "```" {
+			j += 3
+			continue
+		}
+		if inlinePart[j] == '`' {
+			backtickCount++
+		}
+		j++
+	}
+	
+	return backtickCount%2 == 1
+}
+
 func ParseLinks(body string) []Link {
 	var out []Link
 	start := 0
@@ -47,6 +84,10 @@ func ParseLinks(body string) []Link {
 		close += open + 2
 
 		content := body[open+2 : close]
+		if isInCodeBlock(body, open) {
+			start = close + 2
+			continue
+		}
 		if content == "" {
 			start = close + 2
 			continue

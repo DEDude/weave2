@@ -145,3 +145,30 @@ func TestParseLinks_SkipsMalformed(t *testing.T) {
 		t.Fatalf("ParseLinks() = %#v, want %#v", got, want)
 	}
 }
+
+func TestParseLinks_SkipsInlineCode(t *testing.T) {
+	body := "Real [[note-1]] and example `[[note-2]]` end"
+	got  := ParseLinks(body)
+
+	want := []Link{
+		{ID: "note-1", Type: DefaultLinkType, Label: ""},
+	}
+
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("ParseLinks() = %#v, want %#v", got, want)
+	}
+}
+
+func TestParseLinks_SkipsFencedCodeBlock(t *testing.T) {
+	body := "Real [[note-1]] text\n```\n[[note-2]]\n```\nReal [[note-3]]"
+	got  := ParseLinks(body)
+
+	want := []Link{
+		{ID: "note-1", Type: DefaultLinkType, Label: ""},
+		{ID: "note-3", Type: DefaultLinkType, Label: ""},
+	}
+
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("ParseLinks() = %#v, want %#v", got, want)
+	}
+}
