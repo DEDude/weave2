@@ -16,6 +16,7 @@ type Note struct {
 	Title    string
 	Body     string
 	Tags     []string
+	Type     string
 	Created  time.Time
 	Modified time.Time
 	Links    []links.Link
@@ -25,6 +26,7 @@ type frontmatter struct {
 	ID       string        `yaml:"id"`
 	Title    string        `yaml:"title"`
 	Tags     []string      `yaml:"tags,omitempty"`
+	Type     string        `yaml:"type,omitempty"`
 	Created  time.Time     `yaml:"created,omitempty"`
 	Modified time.Time     `yaml:"modified,omitempty"`
 	Links    []links.Link  `yaml:"links,omitempty"`
@@ -35,6 +37,7 @@ func Write(n Note) ([]byte, error) {
 		ID:       n.ID,
 		Title:    n.Title,
 		Tags:     n.Tags,
+		Type:     n.Type,
 		Created:  n.Created,
 		Modified: n.Modified,
 		Links:    n.Links,
@@ -93,6 +96,7 @@ func Read(data []byte) (Note, error) {
 		ID:       fm.ID,
 		Title:    fm.Title,
 		Tags:     fm.Tags,
+		Type:     fm.Type,
 		Created:  fm.Created,
 		Modified: fm.Modified,
 		Links:    fm.Links,

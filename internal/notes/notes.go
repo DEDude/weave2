@@ -60,6 +60,9 @@ func Create(vaultPath string, note markdown.Note, timestamp time.Time) (string, 
 	note.ID = id
 	note.Created = timestamp
 	note.Modified = timestamp
+	if note.Type == "" {
+		note.Type = "Note"
+	}
 
 	filePath, err := ResolvePath(vaultPath, id)
 	if err != nil {

@@ -130,48 +130,20 @@ Tasks:
 Acceptance Criteria: Search returns expected matches in tests; handles empty results gracefully.
 Risks/Gotchas: Performance on large vaults (acceptable for v0.1); case folding decisions.
 
-
 ## Phase 7 — RDF Projection
-Goal: Project Notes to RDF triples using rdf2go library and vocab strategy.
-Deliverables: Converter Note → []rdf.Triple; vocab mapping; vault-level converter with deduplication.
-
-**Design Decisions:**
-- Library: `github.com/deiu/rdf2go` for triple representation and serialization
-- Base URI: Configurable, HTTP-style with type separation (e.g., `{base}/notes/{id}`, `{base}/tags/{tag}`)
-- API: Pure function `NoteToTriples(note, baseURI)` + helper `VaultToTriples(notes, baseURI)` with tag deduplication
-- Error handling: Never fail; sanitize invalid inputs gracefully
-- Note typing: Dual types - custom (`weave:Note`) + standard vocab (`schema:Article`)
-- Tags: Type as `skos:Concept` + add `skos:prefLabel` for human-readable labels
-- Links: Unidirectional (generate only what's written; let reasoners infer symmetric relationships)
-- Type field: Added to Note struct with default value "Note"
-
-**Vocabulary Mapping:**
-- Note metadata: `dcterms:identifier`, `dcterms:title`, `dcterms:created`, `dcterms:modified`
-- Note body: `schema:text`
-- Note type: `rdf:type weave:Note` + `rdf:type schema:Article` (dual typing)
-- Tags: `dcterms:subject` → tag URI, tag typed as `skos:Concept` with `skos:prefLabel`
-- Typed relationships:
-  - `linksTo` → `weave:linksTo`
-  - `related` → `skos:related`
-  - `broader` → `skos:broader`
-  - `narrower` → `skos:narrower`
-  - `seeAlso` → `rdfs:seeAlso`
-  - Unknown types → `weave:{type}` (custom namespace)
-
+Goal: Project Notes to RDF triples using tripl and vocab strategy.
+Deliverables: Converter Note → []tripl.Triple; vocab mapping.
 Tasks:
-- [ ] 7.1: Add rdf2go dependency (`go get github.com/deiu/rdf2go`)
-- [ ] 7.2: Implement `NoteToTriples(note, baseURI)` with all field mappings
-- [ ] 7.3: Implement `VaultToTriples(notes, baseURI)` with tag deduplication
-- [ ] 7.4: Add relationship type mapping with known types whitelist
-- [ ] 7.5: Write tests for basic triple generation (ID, title, body, dates)
-- [ ] 7.6: Write tests for tags (type + label generation)
-- [ ] 7.7: Write tests for typed links (all relationship types)
-- [ ] 7.8: Write tests for vault-level deduplication
-- [ ] 7.9: Write tests for serialization to Turtle/N-Triples/JSON-LD
+- [ ] Validate relationship types: whitelist known types, map to appropriate RDF predicates, handle unknown types gracefully.
+- [ ] Map fields: dcterms:title, dcterms:identifier, dcterms:created/modified, schema:text, skos:Concept for tags, typed relationships: skos:related, skos:broader, skos:narrower, rdfs:seeAlso, weave:* for custom types, foaf:Person if authors exist.
+- [ ] Use tripl constructors; no reimplementation.
+- [ ] Tests for triple contents and serialization via tripl encoders (Turtle/N-Triples/JSON-LD).
+Acceptance Criteria: Triples match expected IRIs/literals in tests; serialize without errors.
+Risks/Gotchas: IRI base/curie handling; literal datatype for dates.
 
-Status: Design complete; ready for implementation.
-Acceptance Criteria: Triples match expected IRIs/literals in tests; dual typing works; tags deduplicated; serialization produces valid output.
-Risks/Gotchas: URI encoding for special characters; datetime literal formatting; rdf2go API compatibility.
+## Phase 8 — Graph Engine
+Goal: Build adjacency/backlink indexes over triples; expose query methods.
+Deliverables: In-process graph module (neighbors, backlinks, ego network/filter).
 Tasks:
 - [ ] Build indexes from projected triples (link predicates).
 - [ ] Query helpers: neighbors(id), backlinks(id), filtered traversal hooks.
